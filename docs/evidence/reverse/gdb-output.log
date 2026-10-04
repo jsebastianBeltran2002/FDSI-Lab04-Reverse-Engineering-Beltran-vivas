@@ -1,0 +1,82 @@
+===== 1 =====
+Breakpoint 1 at 0x401162: file /mnt/data/reverse_fsi_lab/crackme_level2.c, line 10.
+
+Breakpoint 1, validate_key (candidate=0x7fffffff98f8 "AAAA") at /mnt/data/reverse_fsi_lab/crackme_level2.c:10
+warning: 10	/mnt/data/reverse_fsi_lab/crackme_level2.c: No such file or directory
+rdi            0x7fffffff98f8      140737488328952
+0x7fffffff98f8:	"AAAA"
+0x00000000004012d2 in main (argc=2, argv=0x7fffffff90d8) at /mnt/data/reverse_fsi_lab/crackme_level2.c:36
+36	in /mnt/data/reverse_fsi_lab/crackme_level2.c
+Value returned is $1 = 0
+$2 = 0x0
+=== FDSI CrackMe Level 2 ===
+Hint: static + dynamic analysis.
+Invalid license.
+[Inferior 1 (process 326) exited with code 03]
+===== 2 =====
+Breakpoint 1 at 0x401162: file /mnt/data/reverse_fsi_lab/crackme_level2.c, line 10.
+Breakpoint 2 at 0x4011e7: file /mnt/data/reverse_fsi_lab/crackme_level2.c, line 18.
+
+Breakpoint 1, validate_key (candidate=0x7fffffff98eb "FDSI-REVERSE-2026") at /mnt/data/reverse_fsi_lab/crackme_level2.c:10
+warning: 10	/mnt/data/reverse_fsi_lab/crackme_level2.c: No such file or directory
+0x7fffffff98eb:	"FDSI-REVERSE-2026"
+$1 = 0x0
+0x40208b <k.1>:	0x23	0x51	0x17	0x6a
+0x402090 <expected.0>:	0x65	0x15	0x44	0x23	0x0e	0x03	0x52	0x3c
+0x402098 <expected.0+8>:	0x66	0x03	0x44	0x2f	0x0e	0x63	0x27	0x58
+0x4020a0 <expected.0+16>:	0x15
+
+Breakpoint 2, validate_key (candidate=0x7fffffff98eb "FDSI-REVERSE-2026") at /mnt/data/reverse_fsi_lab/crackme_level2.c:18
+18	in /mnt/data/reverse_fsi_lab/crackme_level2.c
+$2 = 0x0
+0x00000000004012d2 in main (argc=2, argv=0x7fffffff90d8) at /mnt/data/reverse_fsi_lab/crackme_level2.c:36
+36	in /mnt/data/reverse_fsi_lab/crackme_level2.c
+Value returned is $3 = 1
+$4 = 0x1
+=== FDSI CrackMe Level 2 ===
+Hint: static + dynamic analysis.
+License accepted.
+FLAG{ghidra_plus_gdb}
+[Inferior 1 (process 333) exited normally]
+===== 3 =====
+Breakpoint 1 at 0x4011b9: file /mnt/data/reverse_fsi_lab/crackme_level2.c, line 15.
+
+Breakpoint 1, validate_key (candidate=0x7fffffff98eb "FDSI-REVERSE-2026") at /mnt/data/reverse_fsi_lab/crackme_level2.c:15
+warning: 15	/mnt/data/reverse_fsi_lab/crackme_level2.c: No such file or directory
+$1 = 70 'F'
+$2 = 0x46
+$3 = 0x23
+0x00000000004011bb	15	in /mnt/data/reverse_fsi_lab/crackme_level2.c
+$4 = 0x65
+
+Breakpoint 1, validate_key (candidate=0x7fffffff98eb "FDSI-REVERSE-2026") at /mnt/data/reverse_fsi_lab/crackme_level2.c:15
+15	in /mnt/data/reverse_fsi_lab/crackme_level2.c
+$5 = 68 'D'
+$6 = 0x51
+Breakpoint 2 at 0x4012d2: file /mnt/data/reverse_fsi_lab/crackme_level2.c, line 36.
+
+Breakpoint 2, 0x00000000004012d2 in main (argc=2, argv=0x7fffffff90d8) at /mnt/data/reverse_fsi_lab/crackme_level2.c:36
+36	in /mnt/data/reverse_fsi_lab/crackme_level2.c
+$7 = 0x1
+=== FDSI CrackMe Level 2 ===
+Hint: static + dynamic analysis.
+License accepted.
+FLAG{ghidra_plus_gdb}
+[Inferior 1 (process 340) exited normally]
+===== 4 (stripped) =====
+Breakpoint 1 at 0x4012d2
+
+Breakpoint 1, 0x00000000004012d2 in ?? ()
+$1 = 0x0
+=== FDSI CrackMe Level 2 ===
+Hint: static + dynamic analysis.
+Invalid license.
+[Inferior 1 (process 347) exited with code 03]
+
+Breakpoint 1, 0x00000000004012d2 in ?? ()
+$2 = 0x1
+=== FDSI CrackMe Level 2 ===
+Hint: static + dynamic analysis.
+License accepted.
+FLAG{ghidra_plus_gdb}
+[Inferior 1 (process 350) exited normally]

@@ -1,0 +1,24 @@
+$ ./crackme_level1
+=== FDSI CrackMe Level 1 ===
+Uso: ./crackme_level1 <password>
+$ ./crackme_level1 prueba
+=== FDSI CrackMe Level 1 ===
+Access denied.
+$ ./crackme_level1 REDTEAM-101
+=== FDSI CrackMe Level 1 ===
+Access granted.
+FLAG{strings_are_evidence}
+$ ./crackme_level2 AAAA
+=== FDSI CrackMe Level 2 ===
+Hint: static + dynamic analysis.
+Invalid license.
+$ ./crackme_level2 FDSI-REVERSE-2026
+=== FDSI CrackMe Level 2 ===
+Hint: static + dynamic analysis.
+License accepted.
+FLAG{ghidra_plus_gdb}
+$ ./crackme_level2_stripped FDSI-REVERSE-2026
+=== FDSI CrackMe Level 2 ===
+Hint: static + dynamic analysis.
+License accepted.
+FLAG{ghidra_plus_gdb}
