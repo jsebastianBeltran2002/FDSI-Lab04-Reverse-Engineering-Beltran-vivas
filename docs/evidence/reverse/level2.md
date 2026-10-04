@@ -27,9 +27,20 @@ En `strings` no aparece nada que parezca una clave. Sí aparecen los símbolos `
    if (validate_key(argv[1]) == 0) { puts("Invalid license."); return 3; }
    puts("License accepted."); reveal_flag(); return 0;
    ```
-6. Doble clic en `validate_key` y renombrar variables (tecla **L**):
-   `local_20 → len_esperada`, `local_c → diff`, `local_18 → i`, `local_21 → transformado`
-7. Doble clic en `k.1` y `expected.0` para ver sus bytes en el *Listing*
+   En `main` se renombró `iVar1 → resultado_validacion`.
+
+   ![Ghidra: main llama a validate_key](screenshots/l2_ghidra_main.png)
+
+6. Doble clic en `validate_key` y renombrar variables (tecla **L**). Como el binario trae DWARF, Ghidra ya mostraba algunos nombres; se renombraron según lo deducido:
+   `candidate → clave_usuario`, `sVar2 → longitud_ingresada`, `score → diff_acumulado`, `uVar1 → es_valida`.
+   Se agregaron comentarios (tecla **;**) explicando el chequeo de longitud (`0x11` = 17) y el XOR cíclico `clave_usuario[i] ^ k[i & 3]` comparado contra `expected[i]`.
+   En el decompilador los arreglos aparecen como literales: `"#Qj"` = `k` (`23 51 17 6a`) y `"eD#..."` = `expected`.
+
+   ![Ghidra: validate_key con variables renombradas y comentarios](screenshots/l2_ghidra_validate_renamed.png)
+
+7. En el *Listing*, `G` → `40208b` para ver los bytes de `k.1` y `expected.0`:
+
+   ![Ghidra: bytes de k.1 y expected.0 en .rodata](screenshots/l2_ghidra_data.png)
 
 ## 3. Lo que muestra el desensamblado de `validate_key` (0x401156)
 
@@ -114,6 +125,8 @@ e = bytes.fromhex("651544230e03523c6603442f0e63275815")
 print(bytes(e[i] ^ k[i % 4] for i in range(len(e))).decode())   # FDSI-REVERSE-2026
 ```
 
+![Reconstrucción de la clave con Python](screenshots/l2_python_key.png)
+
 ## 6. Confirmación
 
 ```text
@@ -123,6 +136,8 @@ Hint: static + dynamic analysis.
 License accepted.
 FLAG{ghidra_plus_gdb}                    (exit code 0)
 ```
+
+![Clave falsa vs. clave válida](screenshots/l2_flag.png)
 
 La confirmación dinámica con GDB está en [`gdb.md`](gdb.md).
 
@@ -144,6 +159,8 @@ La confirmación dinámica con GDB está en [`gdb.md`](gdb.md).
 
 `strip` elimina los **nombres**, no la **lógica**. Las cadenas, las constantes y las instrucciones siguen ahí.
 
+![nm sin símbolos y GDB sobre el binario stripped](screenshots/boss_nm_gdb_stripped.png)
+
 ## Cómo se encontró la validación sin nombres
 
 1. **Desde `_start` hasta `main`.** El punto de entrada (`readelf -h` → `0x401070`) hace `mov rdi,0x401267` justo antes de llamar a `__libc_start_main`. El primer argumento de esa función siempre es `main`, así que `main` está en **0x401267**. En Ghidra aparece como `FUN_00401267` y se renombra a `main`.
@@ -154,7 +171,9 @@ La confirmación dinámica con GDB está en [`gdb.md`](gdb.md).
    4012d2: test eax,eax
    4012d4: je   -> "Invalid license."
    ```
-   La función cuyo resultado decide entre "accepted" e "invalid" es la validadora, así que `FUN_00401156` se renombra a `validate_key`.
+   La función cuyo resultado decide entre "accepted" e "invalid" es la validadora, así que `FUN_00401156` se renombra a `validate_key` (y `FUN_00401267` a `main`).
+
+   ![Ghidra stripped: desde la XREF de "License accepted." hasta FUN_00401156 renombrada](screenshots/boss_ghidra_xref.png)
 4. **Comportamiento.** Dentro de `FUN_00401156` aparecen el mismo patrón `strlen` + `cmp 0x11`, `and eax,0x3` y dos `xor` contra `DAT_0040208b` y `DAT_00402090`, y la función termina en `sete`. Es el mismo algoritmo. `FUN_004011f3` (llamada después de "accepted") hace XOR con 0x37 y `putchar`, así que es `reveal_flag`.
 5. **Confirmación con GDB**, poniendo el breakpoint por dirección porque ya no hay nombres (`break *0x4012d2`). Ver `gdb.md`, sección 4.
 
@@ -164,11 +183,11 @@ License accepted.
 FLAG{ghidra_plus_gdb}
 ```
 
-## Capturas sugeridas (`screenshots/`)
+## Capturas (`screenshots/`)
 - `l2_ghidra_main.png`: decompilador de `main` mostrando la llamada a `validate_key`
-- `l2_ghidra_validate_renamed.png`: `validate_key` con variables renombradas (**obligatoria**)
+- `l2_ghidra_validate_renamed.png`: `validate_key` con variables renombradas y comentarios
 - `l2_ghidra_data.png`: bytes de `k.1` y `expected.0` en el Listing
 - `l2_python_key.png`: script que reconstruye la clave
-- `l2_flag.png`: ejecución exitosa
-- `boss_nm.png`: `nm` mostrando `no symbols`
-- `boss_ghidra_xref.png`: referencias a `License accepted.` → `FUN_00401156`
+- `l2_flag.png`: clave falsa vs. clave válida
+- `boss_nm_gdb_stripped.png`: `nm` → no symbols + GDB por dirección
+- `boss_ghidra_xref.png`: referencias a `License accepted.` → `FUN_00401156` renombrada a `validate_key`

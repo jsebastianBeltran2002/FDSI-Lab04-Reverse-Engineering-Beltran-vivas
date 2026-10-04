@@ -17,6 +17,8 @@ $ ./crackme_level1 prueba
 Access denied.                           (exit code 2)
 ```
 
+![Ejecución con clave falsa](screenshots/l1_run_fail.png)
+
 - El programa recibe **un argumento** (`argc == 2`) y responde `Access granted.` / `Access denied.`
 - `file` indica: ELF 64-bit, x86-64, enlazado dinámicamente, **not stripped, with debug_info**. Es decir, conserva nombres de funciones y variables.
 
@@ -41,6 +43,8 @@ print_flag        <- símbolo de una función que imprime la flag
 
 La aparición de `strcmp` en las importaciones y de `REDTEAM-101` junto a los mensajes de acceso refuerza la hipótesis.
 
+![strings: strcmp y REDTEAM-101](screenshots/l1_strings.png)
+
 ### `objdump -d -M intel crackme_level1` (función `main`)
 
 ```asm
@@ -55,6 +59,8 @@ La aparición de `strcmp` en las importaciones y de `REDTEAM-101` junto a los me
 40124a: ... puts("Access granted.")
 401259: call print_flag
 ```
+
+![objdump: call strcmp en main](screenshots/l1_objdump_main.png)
 
 ### `objdump -s -j .rodata` confirma qué hay en `0x402004`
 
@@ -73,6 +79,8 @@ Access granted.
 FLAG{strings_are_evidence}               (exit code 0)
 ```
 
+![Ejecución exitosa con la FLAG](screenshots/l1_flag.png)
+
 ## 5. Detalle extra: ¿por qué la FLAG no aparece en `strings`?
 
 `print_flag` no guarda la flag en texto plano. La arma en el stack con constantes de 64 bits (`movabs`) y la decodifica con **XOR 0x5A**, imprimiendo un byte a la vez con `putchar` (26 bytes, `cmp ...,0x19`). Por eso la pista dice *"no busques la FLAG, busca qué compara"*: la flag está ofuscada, pero la contraseña no lo está.
@@ -83,8 +91,9 @@ Toda constante de texto que el programa usa (como el literal `"REDTEAM-101"`) el
 
 **Lección de desarrollo seguro:** nunca se deben poner secretos en el código (*hardcoded credentials*, CWE-798). La verificación de credenciales tiene que hacerse en el servidor, contra un hash con sal (bcrypt/argon2), y los secretos se cargan desde un gestor de secretos o desde variables de entorno.
 
-## Capturas sugeridas (`screenshots/`)
+## Capturas (`screenshots/`)
+- `baseline_file_sha256.png`: `file` + `sha256sum` (integridad de los binarios)
 - `l1_run_fail.png`: ejecución con `prueba`
-- `l1_strings.png`: salida de `strings` resaltando `REDTEAM-101` y `strcmp`
+- `l1_strings.png`: salida de `strings` con `REDTEAM-101` y `strcmp`
 - `l1_objdump_main.png`: `call strcmp` en `main`
 - `l1_flag.png`: ejecución exitosa con la FLAG

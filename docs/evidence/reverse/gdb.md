@@ -26,6 +26,8 @@ $2 = 0x0
 Invalid license.        [exit code 03]
 ```
 
+![GDB clave falsa: retorno 0](screenshots/gdb_fail.png)
+
 **Interpretación:** `rdi` apunta a la cadena del usuario, lo que confirma que `validate_key(argv[1])` recibe la clave. Como `strlen("AAAA") = 4 ≠ 17`, la función retorna 0 en el primer `je` (`0x40117a`), sin llegar a entrar al bucle.
 
 ## 2. Clave correcta: leer los datos y el acumulador
@@ -54,6 +56,8 @@ License accepted.
 FLAG{ghidra_plus_gdb}
 ```
 
+![GDB clave correcta: k, expected, diff=0, retorno 1](screenshots/gdb_success.png)
+
 **Interpretación:** los bytes de memoria coinciden con lo que se leyó estáticamente en Ghidra. Al terminar el bucle, el acumulador `diff` (`[rbp-0x4]`) vale 0, y por eso `sete al` produce 1.
 
 ## 3. Ver la transformación XOR byte a byte
@@ -70,6 +74,8 @@ Iteración i=1:
   $ecx = 0x44 'D'
   $eax = 0x51        <- k[1 & 3]
 ```
+
+![GDB: XOR en los registros](screenshots/gdb_xor.png)
 
 **Interpretación:** aquí se ve en los registros exactamente la operación del pseudocódigo, `transformado = candidata[i] XOR K[i mod 4]`, y el resultado es igual a `expected[i]`.
 
@@ -93,6 +99,8 @@ Breakpoint 1, 0x00000000004012d2 in ?? ()
 $2 = 0x1          License accepted.  FLAG{ghidra_plus_gdb}
 ```
 
+![Boss: nm sin símbolos y GDB por dirección (retorno 0 / 1)](screenshots/boss_nm_gdb_stripped.png)
+
 **Interpretación:** con una clave falsa de 17 caracteres (que sí pasa el chequeo de longitud y entra al bucle), la función retorna 0. Con la clave reconstruida retorna 1. Esto confirma que `FUN_00401156` es la validadora y que el algoritmo no cambió con `strip`.
 
 ## ¿Qué aportó GDB que el análisis estático no demostraba?
@@ -101,8 +109,8 @@ $2 = 0x1          License accepted.  FLAG{ghidra_plus_gdb}
 - Los **valores reales** en memoria durante la ejecución, no solo lo que muestra el decompilador.
 - La evidencia de que la hipótesis funciona: con la clave falsa el retorno es 0 y con la correcta es 1. Pasamos de "creo que es así" a "demostrado".
 
-## Capturas sugeridas (`screenshots/`)
+## Capturas (`screenshots/`)
 - `gdb_fail.png`: sección 1 (retorno 0)
-- `gdb_success.png`: sección 2 (diff = 0, retorno 1)
+- `gdb_success.png`: sección 2 (bytes de `k` y `expected`, diff = 0, retorno 1)
 - `gdb_xor.png`: sección 3 (registros durante el XOR)
-- `gdb_stripped.png`: sección 4 (`?? ()` y retornos 0/1)
+- `boss_nm_gdb_stripped.png`: sección 4 (`nm` → no symbols, `?? ()` y retornos 0/1)
